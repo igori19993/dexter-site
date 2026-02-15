@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>DEXTER.CC</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #050505;
+    color: #e6e6e6;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* BACKGROUND */
+.gradient {
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at top left, #0a1a12, transparent 60%),
+        radial-gradient(circle at bottom right, #0f2a18, transparent 60%);
+    animation: moveGradient 12s ease-in-out infinite alternate;
+    z-index: 0;
+}
+
+@keyframes moveGradient {
+    from { filter: brightness(0.9); }
+    to   { filter: brightness(1.1); }
+}
+
+/* DVD */
+#dvd {
+    position: fixed;
+    font-size: 42px;
+    font-weight: bold;
+    color: #1f8f3a;
+    user-select: none;
+    z-index: 1;
+}
+
+/* NAV */
+.nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    background: rgba(10,10,10,0.7);
+    backdrop-filter: blur(8px);
+    padding: 12px 22px;
+    border-radius: 14px;
+    z-index: 2;
+}
+
+.nav button {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.nav button:hover,
+.nav button.active {
+    color: #1f8f3a;
+}
+
+/* CONTENT */
+.content {
+    position: absolute;
+    top: 140px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    max-width: 700px;
+    width: calc(100% - 40px);
+    background: rgba(10,10,10,0.65);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    padding: 30px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    z-index: 2;
+}
+
+.content.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+h2 {
+    margin-top: 22px;
+    margin-bottom: 10px;
+}
+
+p, li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #cfcfcf;
+}
+
+ul {
+    margin-left: 18px;
+}
+
+/* LINKS & BUTTONS */
+a.discord {
+    color: #4da6ff;
+    text-decoration: none;
+}
+
+.buy-btn {
+    margin-top: 18px;
+    background: #1f8f3a;
+    border: none;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.buy-btn:hover {
+    background: #26a845;
+}
+
+/* OVERLAY */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* RED MODAL */
+.modal.red {
+    background: #120606;
+    border: 1px solid #3a0f0f;
+    border-radius: 14px;
+    width: 460px;
+    max-width: 90%;
+    padding: 26px;
+    position: relative;
+    animation: modalIn 0.25s ease-out;
+}
+
+.modal.red h2 {
+    color: #ff4d4d;
+    margin-bottom: 16px;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.status-ok {
+    color: #1f8f3a;
+    font-weight: bold;
+}
+
+.status-bad {
+    color: #ff4d4d;
+    font-weight: bold;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    cursor: pointer;
+    font-size: 22px;
+    color: #aaa;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* MUSIC PLAYER */
+#musicPlayer {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background: rgba(10,10,10,0.75);
+    backdrop-filter: blur(8px);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 20;
+}
+
+#musicPlayer .track {
+    font-size: 13px;
+    color: #aaa;
+}
+
+#musicPlayer button {
+    background: #1f8f3a;
+    border: none;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+#musicPlayer button:hover {
+    background: #26a845;
+}
+</style>
+</head>
+<body>
+
+<div class="gradient"></div>
+<div id="dvd">DEXTER.CC</div>
+
+<div class="nav">
+    <button class="active" onclick="showTab('home', this)">Главная</button>
+    <button onclick="showTab('contacts', this)">Контакты</button>
+</div>
+
+<div id="home" class="content active">
+    <h1>DEXTER.CC</h1>
+    <p style="text-align:center;">Приватный доступ. Ограниченное распространение.</p>
+
+    <h2>Почему именно мы?</h2>
+    <p>
+        Да, мы малоизвестный проект, но это наш плюс.
+        Именно малоизвестность является причиной покупки инвайта.
+        А значит меньший шанс VAC-BAN'а.
+    </p>
+
+    <h2>Что вы получаете</h2>
+    <ul>
+        <li>Закрытый доступ без публичной рекламы</li>
+        <li>Ограниченное количество пользователей</li>
+        <li>Регулярные обновления и доработки</li>
+        <li>Минимум лишнего, максимум функционала</li>
+    </ul>
+
+    <h2>Как это работает</h2>
+    <ul>
+        <li>Связываетесь с нами</li>
+        <li>Обсуждаете условия</li>
+        <li>Получаете инвайт</li>
+        <li>Дальнейшие инструкции выдаются лично</li>
+    </ul>
+
+    <h2>FAQ</h2>
+    <p><b>Это безопасно?</b><br>Ничто не абсолютно безопасно. Мы минимизируем риски.</p>
+    <p><b>Есть ли гарантии?</b><br>Нет громких обещаний. Только факты и практика.</p>
+</div>
+
+<!-- КОНТАКТЫ — ТУТ ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ -->
+<div id="contacts" class="content">
+    <h2>Контакты</h2>
+
+    <p>
+        Единственный официальный способ связи - Discord.
+        Мы не используем сторонние мессенджеры и не отвечаем на сообщения вне указанного канала.
+    </p>
+
+    <p>
+        <a class="discord" href="https://discord.gg/W8RpYd6bVV" target="_blank">Discord</a>
+    </p>
+
+    <h2>Как правильно обращаться</h2>
+    <ul>
+        <li>Пишите по делу, без «привет, есть вопрос»</li>
+        <li>Сразу формулируйте, что именно вас интересует</li>
+        <li>Уважайте время - своё и наше</li>
+    </ul>
+
+    <h2>Чего делать не стоит</h2>
+    <ul>
+        <li>Спамить сообщениями</li>
+        <li>Просить «попробовать бесплатно»</li>
+        <li>Задавать вопросы, ответы на которые уже есть на сайте</li>
+    </ul>
+
+    <h2>Ответы и сроки</h2>
+    <p>
+        Мы не отвечаем мгновенно и не работаем 24/7.
+        Ответ может занять время - это нормально.
+        Отсутствие ответа чаще всего означает, что диалог не имеет смысла продолжать.
+    </p>
+
+    <p>
+        Мы никого не уговариваем и ничего не навязываем.
+        Если вам нужно подумать - подумайте.
+        Если не уверены - лучше не писать.
+    </p>
+
+    <button class="buy-btn" onclick="openPurchase()">Покупка</button>
+</div>
+
+<!-- RED STATUS MODAL -->
+<div id="purchaseOverlay" class="overlay">
+    <div class="modal red">
+        <span class="close" onclick="closePurchase()">×</span>
+        <h2>Ой! Инвайт недоступен по одной из причин:</h2>
+        <div class="status-item"><span>Технические работы</span><span class="status-ok">−</span></div>
+        <div class="status-item"><span>Проблемы с серверами</span><span class="status-ok">−</span></div>
+        <div class="status-item"><span>Взлом кода / сервера</span><span class="status-ok">−</span></div>
+        <div class="status-item"><span>Глобальные технические работы</span><span class="status-bad">+</span></div>
+        <div class="status-item"><span>Сервера закрыты</span><span class="status-ok">−</span></div>
+    </div>
+</div>
+
+<!-- MUSIC PLAYER -->
+<div id="musicPlayer">
+    <div class="track">NEXTIME — СВЕТЛАНА</div>
+    <button id="musicBtn">Начать</button>
+</div>
+
+<audio id="audio" preload="none">
+    <source src="krit.mp3" type="audio/mpeg">
+</audio>
+
+<!-- MUSIC WARNING -->
+<div id="musicWarning" class="overlay">
+    <div class="modal red">
+        <span class="close" onclick="closeMusicWarning()">×</span>
+        <h2>Внимание</h2>
+        <p>
+            Данный трек содержит нецензурную лексику.<br>
+            Музыка будет воспроизводиться на фоне сайта.
+        </p>
+        <button class="buy-btn" onclick="confirmMusic()">Продолжить</button>
+    </div>
+</div>
+
+<script>
+function showTab(id, btn) {
+    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+    setTimeout(() => document.getElementById(id).classList.add('active'), 50);
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function openPurchase() {
+    document.getElementById('purchaseOverlay').style.display = 'flex';
+}
+function closePurchase() {
+    document.getElementById('purchaseOverlay').style.display = 'none';
+}
+
+/* DVD */
+const dvd = document.getElementById('dvd');
+let x = 100, y = 100, vx = 2.2, vy = 2.2;
+function moveDVD() {
+    x += vx; y += vy;
+    if (x <= 0 || x + dvd.offsetWidth >= innerWidth) vx *= -1;
+    if (y <= 0 || y + dvd.offsetHeight >= innerHeight) vy *= -1;
+    dvd.style.left = x + 'px';
+    dvd.style.top = y + 'px';
+    requestAnimationFrame(moveDVD);
+}
+moveDVD();
+
+/* MUSIC */
+const audio = document.getElementById("audio");
+const btn = document.getElementById("musicBtn");
+const warning = document.getElementById("musicWarning");
+let started = false, playing = false, fade;
+
+function fadeTo(target) {
+    clearInterval(fade);
+    fade = setInterval(() => {
+        if (Math.abs(audio.volume - target) < 0.02) {
+            audio.volume = target;
+            if (target === 0) audio.pause();
+            clearInterval(fade);
+            return;
+        }
+        audio.volume += (target > audio.volume ? 0.02 : -0.02);
+    }, 60);
+}
+
+btn.onclick = () => {
+    if (!started) {
+        warning.style.display = "flex";
+        return;
+    }
+    if (playing) {
+        fadeTo(0);
+        btn.textContent = "Продолжить";
+        playing = false;
+    } else {
+        audio.play();
+        fadeTo(0.25);
+        btn.textContent = "Пауза";
+        playing = true;
+    }
+};
+
+function confirmMusic() {
+    warning.style.display = "none";
+    started = true;
+    audio.volume = 0;
+    audio.play();
+    fadeTo(0.25);
+    btn.textContent = "Пауза";
+    playing = true;
+}
+
+function closeMusicWarning() {
+    warning.style.display = "none";
+}
+</script>
+
+</body>
+</html>
